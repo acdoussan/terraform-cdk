@@ -14,17 +14,20 @@ namespace Examples
     {
         public IteratorStack(Construct scope, string name) : base(scope, name)
         {
-            new AwsProvider(this, "aws", new AwsProviderConfig {
+            new AwsProvider(this, "aws", new AwsProviderConfig
+            {
                 Region = "eu-central-1"
             });
 
             // DOCS_BLOCK_START:iterators-define-iterators
-            TerraformVariable list = new TerraformVariable(this, "list", new TerraformVariableConfig {
+            TerraformVariable list = new TerraformVariable(this, "list", new TerraformVariableConfig
+            {
                 Type = "list(string)"
             });
-            
+
             ListTerraformIterator iterator = ListTerraformIterator.FromList(list.ListValue);
-            S3Bucket s3Bucket = new S3Bucket(this, "bucket", new S3BucketConfig {
+            S3Bucket s3Bucket = new S3Bucket(this, "bucket", new S3BucketConfig
+            {
                 ForEach = iterator,
                 Bucket = Token.AsString(iterator.Value)
             });
@@ -33,22 +36,29 @@ namespace Examples
 
             // DOCS_BLOCK_START:iterators-iterators-complex-types
             // We need a local to be able to pass the list to the iterator
-            TerraformLocal listLocal = new TerraformLocal(this, "listLocal",  new [] {
-                new Dictionary<string, object> {
-                    { "name", "website-static-files" },
-                    { "tags", new Dictionary<string, string> {
-                        { "app", "website" }
-                    }}
+            TerraformLocal complexLocal = new TerraformLocal(this, "complex_local", new Dictionary<string, object> {
+                {
+                    "website ",
+                    new Dictionary<string, object> {
+                        { "name", "website-static-files" },
+                        { "tags", new Dictionary<string, string> {
+                            { "app", "website" }
+                        }}
+                    }
                 },
-                new Dictionary<string, object> {
-                    { "name", "images" },
-                    { "tags", new Dictionary<string, string> {
-                        { "app", "image-converter" }
-                    }}
+                {
+                    "images",
+                    new Dictionary<string, object> {
+                        { "name", "images" },
+                        { "tags", new Dictionary<string, string> {
+                            { "app", "image-converter" }
+                        }}
+                    }
                 }
             });
-            ListTerraformIterator listIterator = ListTerraformIterator.FromList(listLocal.AsList);
-            new S3Bucket(this, "listBucket", new S3BucketConfig {
+            ListTerraformIterator listIterator = ListTerraformIterator.FromList(complexLocal.AsAnyMap);
+            new S3Bucket(this, "bucket", new S3BucketConfig
+            {
                 ForEach = listIterator,
                 Bucket = listIterator.GetString("name"),
                 Tags = listIterator.GetStringMap("tags")
