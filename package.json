@@ -93,7 +93,7 @@
       "./tools/add-copyright-header-to-file.sh"
     ],
     "examples/**": "yarn lint:examples",
-    "examples/**/documentation/**": "yarn generate-docs:translations",
+    "examples/*/documentation/**": "yarn generate-docs:translations",
     "website/docs/cdktf/concepts/**": "yarn generate-docs:translations"
   },
   "eslintConfig": {
