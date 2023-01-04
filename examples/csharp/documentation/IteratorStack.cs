@@ -56,12 +56,12 @@ namespace Examples
                     }
                 }
             });
-            ListTerraformIterator listIterator = ListTerraformIterator.FromList(complexLocal.AsAnyMap);
+            MapTerraformIterator mapIterator = MapTerraformIterator.FromMap(complexLocal.AsAnyMap);
             new S3Bucket(this, "bucket", new S3BucketConfig
             {
-                ForEach = listIterator,
-                Bucket = listIterator.GetString("name"),
-                Tags = listIterator.GetStringMap("tags")
+                ForEach = mapIterator,
+                Bucket = mapIterator.GetString("name"),
+                Tags = mapIterator.GetStringMap("tags")
             });
             // DOCS_BLOCK_END:iterators-iterators-complex-types
         }
