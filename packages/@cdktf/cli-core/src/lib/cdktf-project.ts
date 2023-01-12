@@ -8,6 +8,7 @@ import {
   CdktfStack,
   ExternalStackApprovalUpdate,
   StackApprovalUpdate,
+  StackSentinelOverrideUpdate,
   StackUpdate,
 } from "./cdktf-stack";
 import { NestedTerraformOutputs } from "./output";
@@ -365,9 +366,16 @@ export class CdktfProject {
   }
 
   private isWaitingForUserInputUpdate(
-    update: ProjectUpdate | StackUpdate | StackApprovalUpdate
+    update:
+      | ProjectUpdate
+      | StackUpdate
+      | StackApprovalUpdate
+      | StackSentinelOverrideUpdate
   ) {
-    return update.type === "waiting for approval";
+    return [
+      "waiting for stack approval",
+      "waiting for stack sentinel override",
+    ].includes(update.type);
   }
 
   private stopAllStacks() {
@@ -428,7 +436,11 @@ export class CdktfProject {
 
   private handleUserInputProcess(cb: (updateToSend: ProjectUpdate) => void) {
     return (
-      update: StackUpdate | StackApprovalUpdate | ExternalStackApprovalUpdate
+      update:
+        | StackUpdate
+        | StackApprovalUpdate
+        | ExternalStackApprovalUpdate
+        | StackSentinelOverrideUpdate
     ) => {
       const bufferCb = (bufferedUpdate: ProjectUpdate) => {
         this.eventBuffer.push({
